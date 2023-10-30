@@ -1,0 +1,2066 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model administration {
+  id               BigInt                 @id @map("identifier")
+  registry                 DateTime               @db.Date
+  observation              String?                @db.VarChar(1024)
+  administrator_identifier BigInt
+  administrator            administrator          @relation(fields: [administrator_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkf1f4c7e6060f1be")
+  issuer_administration    issuer_administration?
+
+  @@index([id, registry], map: "administration_idx_identifier_registry")
+}
+
+model administrator {
+  id            BigInt           @id @map("identifier")
+  thirdparty_identifier BigInt           @unique
+  administration        administration[]
+  thirdparty            thirdparty       @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f28bef2ad")
+
+  @@index([id], map: "administrator_idx_identifier")
+}
+
+model agencyrating {
+  identifier            BigInt        @id
+  thirdparty_identifier BigInt        @unique
+  thirdparty            thirdparty    @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f2b0e13622")
+  ratingscale           ratingscale[]
+  ratingtag             ratingtag[]
+}
+
+model asset {
+  id                BigInt                     @id @map("identifier")
+  diversified               Boolean?
+  assignordefined           Boolean?
+  sectorized                Boolean?
+  serviced                  Boolean?
+  eligibility_identifier    BigInt?
+  model_identifier          BigInt?
+  classificationmodel       classificationmodel?       @relation(fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk3c9fad03d12557f")
+  eligibilityclassification eligibilityclassification? @relation(fields: [eligibility_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk3c9fad089cb30ab")
+  asset_assignment          asset_assignment[]
+  asset_classification      asset_classification[]
+  asset_currentassetvalue   asset_currentassetvalue[]
+  asset_delinquencyvalue    asset_delinquencyvalue[]
+  asset_fixedassetvalue     asset_fixedassetvalue[]
+  asset_provisionvalue      asset_provisionvalue[]
+  asset_receivablecustody   asset_receivablecustody[]
+  asset_receivablevalue     asset_receivablevalue[]
+  asset_servicing           asset_servicing[]
+  asset_treasuryvalue       asset_treasuryvalue[]
+  assetsecurity             assetsecurity[]
+  operation                 operation[]
+  realestate                realestate[]
+  receivable                receivable[]
+
+  @@index([id], map: "asset_idx_identifier")
+}
+
+model asset_assignment {
+  asset_identifier      BigInt
+  assignment_identifier BigInt     @unique
+  asset                 asset      @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fka547dbbc12bcc005")
+  assignment            assignment @relation(fields: [assignment_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fka547dbbc58405f1b")
+}
+
+model asset_classification {
+  asset_identifier          BigInt
+  classification_identifier BigInt         @unique
+  asset                     asset          @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkbdc4795512bcc005")
+  classification            classification @relation(fields: [classification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkbdc4795526071d4b")
+}
+
+model asset_currentassetvalue {
+  asset_identifier             BigInt
+  currentassetvalue_identifier BigInt            @unique
+  asset                        asset             @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk150df2eb12bcc005")
+  currentassetvalue            currentassetvalue @relation(fields: [currentassetvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk150df2eb187a9645")
+}
+
+model asset_delinquencyvalue {
+  asset_identifier            BigInt
+  delinquencyvalue_identifier BigInt           @unique
+  asset                       asset            @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk965fa16d12bcc005")
+  delinquencyvalue            delinquencyvalue @relation(fields: [delinquencyvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk965fa16d99a0df8b")
+
+  @@index([asset_identifier], map: "asset_delinquencyv_idx_asset_identifier")
+}
+
+model asset_fixedassetvalue {
+  asset_identifier           BigInt
+  fixedassetvalue_identifier BigInt          @unique
+  asset                      asset           @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk9ec5776612bcc005")
+  fixedassetvalue            fixedassetvalue @relation(fields: [fixedassetvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9ec57766fe151ea5")
+}
+
+model asset_provisionvalue {
+  asset_identifier          BigInt
+  provisionvalue_identifier BigInt         @unique
+  asset                     asset          @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkbe778b0b12bcc005")
+  provisionvalue            provisionvalue @relation(fields: [provisionvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkbe778b0b2ecf558b")
+
+  @@index([asset_identifier], map: "asset_provisionval_idx_asset_identifier")
+}
+
+model asset_receivablecustody {
+  asset_identifier             BigInt
+  receivablecustody_identifier BigInt            @unique
+  asset                        asset             @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fka270088612bcc005")
+  receivablecustody            receivablecustody @relation(fields: [receivablecustody_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fka2700886f9aa58b5")
+
+  @@index([asset_identifier], map: "asset_receivablecu_idx_asset_identifier")
+  @@index([receivablecustody_identifier], map: "asset_receivablecu_idx_receivablecustody_identifier")
+}
+
+model asset_receivablevalue {
+  asset_identifier           BigInt
+  receivablevalue_identifier BigInt          @unique
+  asset                      asset           @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk3e72d12612bcc005")
+  receivablevalue            receivablevalue @relation(fields: [receivablevalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk3e72d1265490d685")
+
+  @@index([asset_identifier], map: "asset_receivableva_idx_asset_identifier")
+}
+
+model asset_servicing {
+  asset_identifier     BigInt
+  servicing_identifier BigInt    @unique
+  asset                asset     @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkadb6312bcc005")
+  servicing            servicing @relation(fields: [servicing_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkadb63282c35b5")
+}
+
+model asset_treasuryvalue {
+  asset_identifier         BigInt
+  treasuryvalue_identifier BigInt        @unique
+  asset                    asset         @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkbe1a911f12bcc005")
+  treasuryvalue            treasuryvalue @relation(fields: [treasuryvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkbe1a911fdec3b425")
+
+  @@index([asset_identifier], map: "asset_treasuryvalu_idx_asset_identifier")
+}
+
+model assetsecurity {
+  identifier                  BigInt                        @id
+  asset_identifier            BigInt
+  security_identifier         BigInt
+  asset                       asset                         @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkb337063012bcc005")
+  security                    security                      @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkb337063057b7316e")
+  assetsecurity_positionvalue assetsecurity_positionvalue[]
+}
+
+model assetsecurity_positionvalue {
+  assetsecurity_identifier BigInt
+  position_identifier      BigInt        @unique
+  assetsecurity            assetsecurity @relation(fields: [assetsecurity_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk848acdd9bf190f25")
+  positionvalue            positionvalue @relation(fields: [position_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk848acdd9c0e78604")
+}
+
+model assignment {
+  identifier          BigInt            @id
+  assignor_identifier BigInt?
+  sector_identifier   BigInt?
+  asset_assignment    asset_assignment?
+  assignor            assignor?         @relation(fields: [assignor_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkb3fd62ed59565bb2")
+  economicactivity    economicactivity? @relation(fields: [sector_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkb3fd62edafa34ff0")
+}
+
+model assignor {
+  identifier            BigInt       @id
+  thirdparty_identifier BigInt       @unique
+  assignment            assignment[]
+  thirdparty            thirdparty   @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f2edce7332")
+}
+
+model audit {
+  identifier         BigInt        @id
+  registry           DateTime      @db.Date
+  observation        String?       @db.VarChar(1024)
+  auditor_identifier BigInt
+  auditor            auditor       @relation(fields: [auditor_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk3caabbbfc8e819e")
+  issuer_audit       issuer_audit?
+}
+
+model auditor {
+  identifier            BigInt     @id
+  thirdparty_identifier BigInt     @unique
+  audit                 audit[]
+  thirdparty            thirdparty @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f23bceb6de")
+}
+
+model balanceentry {
+  identifier             BigInt                  @id
+  date                   DateTime                @db.Date
+  value                  Float
+  liability_balanceentry liability_balanceentry?
+}
+
+model balancevalue {
+  identifier            BigInt                 @id
+  amount                Float
+  date                  DateTime               @db.Date
+  number                Float?
+  unitvalue             Float?
+  security_balancevalue security_balancevalue?
+}
+
+model benchmark {
+  identifier         BigInt              @id
+  descriptor         String?
+  reference          DateTime            @db.Date
+  model_identifier   BigInt
+  indexmodel         indexmodel          @relation(fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9f4520ddc484b437")
+  placement          placement[]
+  security_benchmark security_benchmark?
+}
+
+model buytradeoffervalue {
+  identifier                    BigInt                         @id
+  amount                        Float
+  date                          DateTime                       @db.Date
+  number                        Float?
+  unitvalue                     Float?
+  time                          DateTime?                      @db.Time(6)
+  offertime                     DateTime?                      @db.Time(6)
+  settlement_buytradeoffervalue settlement_buytradeoffervalue?
+}
+
+model category {
+  identifier         BigInt               @id
+  name               String               @db.VarChar(255)
+  description        String?              @db.VarChar(1024)
+  categoryconstraint categoryconstraint[]
+  classification     classification[]
+  itemconstraint     itemconstraint[]
+
+  @@index([name, identifier], map: "category_idx_name_identifier")
+}
+
+model categoryconstraint {
+  identifier                             BigInt                                  @id
+  multiselection                         Boolean?
+  category_identifier                    BigInt
+  category                               category                                @relation(fields: [category_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk2fedc59b9e680c8b")
+  classificationmodel_categoryconstraint classificationmodel_categoryconstraint?
+}
+
+model chronology {
+  identifier            BigInt          @id
+  chronology_identifier BigInt
+  model_identifier      BigInt
+  timeline              timeline        @relation(fields: [chronology_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk1f236af860248082")
+  chronologymodel       chronologymodel @relation(fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk1f236af8f4fdf9bf")
+  operation             operation[]
+  security              security[]
+}
+
+model chronologymodel {
+  identifier                                                                  BigInt             @id
+  name                                                                        String             @db.VarChar(255)
+  description                                                                 String?            @db.VarChar(1024)
+  chronology                                                                  chronology[]
+  eventconstraint_eventconstraint_snapshotmodel_identifierTochronologymodel   eventconstraint[]  @relation("eventconstraint_snapshotmodel_identifierTochronologymodel")
+  eventconstraint_eventconstraint_model_identifierTochronologymodel           eventconstraint[]  @relation("eventconstraint_model_identifierTochronologymodel")
+  periodconstraint_periodconstraint_snapshotmodel_identifierTochronologymodel periodconstraint[] @relation("periodconstraint_snapshotmodel_identifierTochronologymodel")
+  periodconstraint_periodconstraint_model_identifierTochronologymodel         periodconstraint[] @relation("periodconstraint_model_identifierTochronologymodel")
+}
+
+model classification {
+  identifier                                    BigInt                                         @id
+  item_identifier                               BigInt
+  category_identifier                           BigInt?
+  asset_classification                          asset_classification?
+  category                                      category?                                      @relation(fields: [category_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkdb1100069e680c8b")
+  itemstructure                                 itemstructure                                  @relation(fields: [item_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkdb110006ce18b9d2")
+  eligibilityclassification_classification      eligibilityclassification_classification?
+  eventevaluationclassification_classification  eventevaluationclassification_classification?
+  eventliquidationclassification_classification eventliquidationclassification_classification?
+  linkedeventregistry                           linkedeventregistry[]
+  operation_classification                      operation_classification?
+  realestateclassification_classification       realestateclassification_classification?
+  receivableclassification_classification       receivableclassification_classification?
+
+  @@index([category_identifier], map: "classification_idx_category_identifier")
+  @@index([identifier, category_identifier], map: "classification_idx_identifier_category_identi")
+}
+
+model classificationmodel {
+  identifier                             BigInt                                   @id
+  name                                   String                                   @db.VarChar(255)
+  description                            String?                                  @db.VarChar(1024)
+  categorized                            Boolean?
+  ordered                                Boolean?
+  asset                                  asset[]
+  classificationmodel_categoryconstraint classificationmodel_categoryconstraint[]
+  classificationmodel_itemconstraint     classificationmodel_itemconstraint[]
+  eligibilityclassification              eligibilityclassification[]
+  eventevaluationclassification          eventevaluationclassification[]
+  eventliquidationclassification         eventliquidationclassification[]
+  linkedeventregistry                    linkedeventregistry[]
+  operation                              operation[]
+  realestateclassification               realestateclassification[]
+  receivableclassification               receivableclassification[]
+}
+
+model classificationmodel_categoryconstraint {
+  classificationmodel_identifier BigInt
+  category_identifier            BigInt              @unique
+  category_index                 Int
+  categoryconstraint             categoryconstraint  @relation(fields: [category_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkc8307897a2ef3148")
+  classificationmodel            classificationmodel @relation(fields: [classificationmodel_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkc8307897cfb3fd65")
+
+  @@id([classificationmodel_identifier, category_index])
+}
+
+model classificationmodel_itemconstraint {
+  classificationmodel_identifier BigInt
+  item_identifier                BigInt              @unique
+  itemconstraint                 itemconstraint      @relation(fields: [item_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk40384e6c3fd34568")
+  classificationmodel            classificationmodel @relation(fields: [classificationmodel_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk40384e6ccfb3fd65")
+}
+
+model constitution {
+  identifier  BigInt   @id
+  name        String   @db.VarChar(255)
+  description String?  @db.VarChar(1024)
+  issuer      issuer[]
+
+  @@index([identifier], map: "constitution_idx_identifier")
+}
+
+model consulting {
+  identifier           BigInt                @id
+  observation          String?               @db.VarChar(1024)
+  registry             DateTime              @db.Date
+  termination          DateTime?             @db.Date
+  analyst_identifier   BigInt
+  creditanalyst        creditanalyst         @relation(fields: [analyst_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk6ce1e096fff59165")
+  structure_consulting structure_consulting?
+
+  @@index([termination, identifier], map: "consulting_idx_termination_identifier")
+}
+
+model contact {
+  identifier              BigInt                 @id
+  category                String                 @db.VarChar(255)
+  nickname                String                 @db.VarChar(255)
+  firstname               String?                @db.VarChar(255)
+  lastname                String?                @db.VarChar(255)
+  cpf                     String?                @db.VarChar(255)
+  title                   String?                @db.VarChar(255)
+  department              String?                @db.VarChar(255)
+  address                 String?                @db.VarChar(255)
+  city                    String?                @db.VarChar(255)
+  state                   String?                @db.VarChar(255)
+  country                 String?                @db.VarChar(255)
+  zipcode                 String?                @db.VarChar(255)
+  workphone1              String?                @db.VarChar(255)
+  workphone2              String?                @db.VarChar(255)
+  homephone               String?                @db.VarChar(255)
+  cellphone               String?                @db.VarChar(255)
+  fax                     String?                @db.VarChar(255)
+  email1                  String?                @db.VarChar(255)
+  email2                  String?                @db.VarChar(255)
+  website                 String?                @db.VarChar(255)
+  observation             String?                @db.VarChar(4096)
+  organization_identifier BigInt
+  thirdparty              thirdparty             @relation(fields: [organization_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9befbc0086ad6b1e")
+  contact_capabilities    contact_capabilities[]
+}
+
+model contact_capabilities {
+  contact_identifier BigInt
+  capability         String  @db.VarChar(255)
+  contact            contact @relation(fields: [contact_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8a763d95cbc1585e")
+
+  @@id([contact_identifier, capability])
+}
+
+model cost {
+  identifier      BigInt         @id
+  descriptor      String?
+  date            DateTime       @db.Date
+  type_identifier BigInt
+  cost_identifier BigInt
+  costtype        costtype       @relation(fields: [type_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk2023ed4907c69b")
+  costaccounting  costaccounting @relation(fields: [cost_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk2023edda85543")
+}
+
+model costaccounting {
+  identifier               BigInt                     @id
+  liability_identifier     BigInt
+  group_identifier         BigInt
+  cost                     cost[]
+  liability                liability                  @relation(fields: [liability_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkbb39fe621adb75c2")
+  costgroup                costgroup                  @relation(fields: [group_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkbb39fe625c732b5")
+  costaccounting_costvalue costaccounting_costvalue[]
+}
+
+model costaccounting_costvalue {
+  costaccounting_identifier BigInt
+  costvalue_identifier      BigInt         @unique
+  costaccounting            costaccounting @relation(fields: [costaccounting_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkbef5cfe741add7ce")
+  costvalue                 costvalue      @relation(fields: [costvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkbef5cfe7e748bd42")
+}
+
+model costgroup {
+  identifier     BigInt           @id
+  name           String           @db.VarChar(255)
+  description    String?          @db.VarChar(1024)
+  target         String?          @db.VarChar(255)
+  costaccounting costaccounting[]
+  costtype       costtype[]
+}
+
+model costtype {
+  identifier       BigInt    @id
+  name             String    @db.VarChar(255)
+  description      String?   @db.VarChar(1024)
+  schema           String
+  formula          String?
+  group_identifier BigInt
+  cost             cost[]
+  costgroup        costgroup @relation(fields: [group_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkea8a68c75c732b5")
+}
+
+model costvalue {
+  identifier               BigInt                    @id
+  date                     DateTime                  @db.Date
+  value                    Float
+  costaccounting_costvalue costaccounting_costvalue?
+}
+
+model cracvmregistry {
+  identifier               BigInt           @id
+  offerdate                DateTime?        @db.Date
+  local                    String?          @db.VarChar(255)
+  expirationdate           DateTime?        @db.Date
+  status                   String?          @db.VarChar(255)
+  finalregistrydate        DateTime?        @db.Date
+  cetipcode                String?          @db.VarChar(255)
+  interestratetype         String?          @db.VarChar(255)
+  interestrate             String?          @db.VarChar(255)
+  interestratefirstpayment DateTime?        @db.Date
+  interestratefrequency    String?          @db.VarChar(255)
+  paymentlocal             String?          @db.VarChar(255)
+  amortizationtype         String?          @db.VarChar(255)
+  amortization             String?          @db.VarChar(255)
+  amortizationfirstpayment DateTime?        @db.Date
+  amortizationfrequency    String?          @db.VarChar(255)
+  floatinggarantee         Boolean?
+  securitizationterm       Boolean?
+  agencyrating             String?          @db.VarChar(255)
+  rating                   String?          @db.VarChar(255)
+  reajustment              String?          @db.VarChar(255)
+  securityregistry         securityregistry @relation(fields: [identifier], references: [identifier], onDelete: Cascade, onUpdate: NoAction, map: "fk7d0429d6cf296c")
+}
+
+model creditanalyst {
+  identifier            BigInt       @id
+  thirdparty_identifier BigInt       @unique
+  consulting            consulting[]
+  thirdparty            thirdparty   @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f2161edf29")
+
+  @@index([identifier], map: "creditanalyst_idx_identifier")
+}
+
+model cricvmregistry {
+  identifier               BigInt           @id
+  offerdate                DateTime?        @db.Date
+  local                    String?          @db.VarChar(255)
+  expirationdate           DateTime?        @db.Date
+  status                   String?          @db.VarChar(255)
+  finalregistrydate        DateTime?        @db.Date
+  cetipcode                String?          @db.VarChar(255)
+  interestratetype         String?          @db.VarChar(255)
+  interestrate             String?          @db.VarChar(255)
+  interestratefirstpayment DateTime?        @db.Date
+  interestratefrequency    String?          @db.VarChar(255)
+  paymentlocal             String?          @db.VarChar(255)
+  amortizationtype         String?          @db.VarChar(255)
+  amortization             String?          @db.VarChar(255)
+  amortizationfirstpayment DateTime?        @db.Date
+  amortizationfrequency    String?          @db.VarChar(255)
+  floatinggarantee         Boolean?
+  securitizationterm       Boolean?
+  agencyrating             String?          @db.VarChar(255)
+  rating                   String?          @db.VarChar(255)
+  reajustment              String?          @db.VarChar(255)
+  securityregistry         securityregistry @relation(fields: [identifier], references: [identifier], onDelete: Cascade, onUpdate: NoAction, map: "fk8d0429d6cf296c")
+}
+
+model currentaccountrange {
+  identifier                    BigInt                         @id
+  date                          DateTime                       @db.Date
+  min                           Float?
+  max                           Float?
+  structure_currentaccountrange structure_currentaccountrange?
+}
+
+model currentassetvalue {
+  identifier              BigInt                   @id
+  date                    DateTime                 @db.Date
+  value                   Float
+  asset_currentassetvalue asset_currentassetvalue?
+}
+
+model currentliabilityvalue {
+  identifier                      BigInt                           @id
+  date                            DateTime                         @db.Date
+  value                           Float
+  liability_currentliabilityvalue liability_currentliabilityvalue?
+}
+
+model delinquencyreceivableindex {
+  identifier                           BigInt                                @id
+  date                                 DateTime                              @db.Date
+  value                                Float
+  structure_delinquencyreceivableindex structure_delinquencyreceivableindex?
+}
+
+model delinquencyvalue {
+  identifier             BigInt                  @id
+  date                   DateTime                @db.Date
+  value                  Float
+  asset_delinquencyvalue asset_delinquencyvalue?
+
+  @@index([identifier, date], map: "delinquencyvalue_idx_identifier_date")
+}
+
+model depositvalue {
+  identifier              BigInt                   @id
+  amount                  Float
+  date                    DateTime                 @db.Date
+  number                  Float?
+  unitvalue               Float?
+  settlement_depositvalue settlement_depositvalue?
+}
+
+model derivativerange {
+  identifier                BigInt                     @id
+  date                      DateTime                   @db.Date
+  min                       Float?
+  max                       Float?
+  structure_derivativerange structure_derivativerange?
+}
+
+model economicactivity {
+  identifier  BigInt       @id
+  name        String       @db.VarChar(255)
+  description String?      @db.VarChar(1024)
+  assignment  assignment[]
+  thirdparty  thirdparty[]
+
+  @@index([identifier], map: "economicactivity_idx_identifier")
+}
+
+model eligibilityclassification {
+  identifier                               BigInt                                     @id
+  model_identifier                         BigInt?
+  asset                                    asset[]
+  classificationmodel                      classificationmodel?                       @relation(fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk3e7c08b33d12557f")
+  eligibilityclassification_classification eligibilityclassification_classification[]
+}
+
+model eligibilityclassification_classification {
+  eligibilityclassification_identifier BigInt
+  classification_identifier            BigInt                    @unique(map: "eligibilityclassification_classif_classification_identifier_key")
+  classification                       classification            @relation(fields: [classification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkf56e891226071d4b")
+  eligibilityclassification            eligibilityclassification @relation(fields: [eligibilityclassification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkf56e89123559a3c5")
+}
+
+model event {
+  identifier      BigInt            @id
+  name            String            @db.VarChar(255)
+  description     String?           @db.VarChar(1024)
+  eventconstraint eventconstraint[]
+  eventregistry   eventregistry[]
+}
+
+model eventconstraint {
+  identifier                                                                BigInt           @id
+  snapshot                                                                  Boolean?
+  single                                                                    Boolean?
+  snapshotmodel_identifier                                                  BigInt?
+  event_identifier                                                          BigInt
+  model_identifier                                                          BigInt
+  event                                                                     event            @relation(fields: [event_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9f7f23f74c0747d7")
+  chronologymodel_eventconstraint_snapshotmodel_identifierTochronologymodel chronologymodel? @relation("eventconstraint_snapshotmodel_identifierTochronologymodel", fields: [snapshotmodel_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9f7f23f7e9bcc783")
+  chronologymodel_eventconstraint_model_identifierTochronologymodel         chronologymodel  @relation("eventconstraint_model_identifierTochronologymodel", fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9f7f23f7f4fdf9bf")
+}
+
+model eventevaluationclassification {
+  identifier                                   BigInt                                         @id
+  model_identifier                             BigInt?
+  classificationmodel                          classificationmodel?                           @relation(fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk118206dc3d12557f")
+  eventevaluationclassification_classification eventevaluationclassification_classification[]
+  structure                                    structure[]
+}
+
+model eventevaluationclassification_classification {
+  eventevaluationclassification_identifier BigInt
+  classification_identifier                BigInt                        @unique(map: "eventevaluationclassification_cla_classification_identifier_key")
+  classification                           classification                @relation(fields: [classification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkf24953c926071d4b")
+  eventevaluationclassification            eventevaluationclassification @relation(fields: [eventevaluationclassification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkf24953c9693e4d1c")
+}
+
+model eventliquidationclassification {
+  identifier                                    BigInt                                          @id
+  model_identifier                              BigInt?
+  classificationmodel                           classificationmodel?                            @relation(fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8a039a253d12557f")
+  eventliquidationclassification_classification eventliquidationclassification_classification[]
+  structure                                     structure[]
+}
+
+model eventliquidationclassification_classification {
+  eventliquidationclassification_identifier BigInt
+  classification_identifier                 BigInt                         @unique(map: "eventliquidationclassification_cl_classification_identifier_key")
+  classification                            classification                 @relation(fields: [classification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk5ca7a56026071d4b")
+  eventliquidationclassification            eventliquidationclassification @relation(fields: [eventliquidationclassification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk5ca7a5605f9f8394")
+}
+
+model eventregistry {
+  identifier                                           BigInt               @id
+  registry                                             DateTime             @db.Date
+  observation                                          String?              @db.VarChar(1024)
+  snapshot_identifier                                  BigInt?
+  event_identifier                                     BigInt
+  timeline_identifier                                  BigInt
+  event                                                event                @relation(fields: [event_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk94b4fcd74c0747d7")
+  timeline_eventregistry_snapshot_identifierTotimeline timeline?            @relation("eventregistry_snapshot_identifierTotimeline", fields: [snapshot_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk94b4fcd7ced7ee16")
+  timeline_eventregistry_timeline_identifierTotimeline timeline             @relation("eventregistry_timeline_identifierTotimeline", fields: [timeline_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk94b4fcd7e74cef79")
+  linkedeventregistry                                  linkedeventregistry?
+}
+
+model exchange {
+  identifier            BigInt       @id
+  thirdparty_identifier BigInt       @unique
+  thirdparty            thirdparty   @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f27a73f243")
+  exchanging            exchanging[]
+}
+
+model exchanging {
+  identifier             BigInt                   @id
+  registry               DateTime                 @db.Date
+  observation            String?                  @db.VarChar(1024)
+  exchange_identifier    BigInt
+  exchange               exchange                 @relation(fields: [exchange_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkad408a40140cf712")
+  exchanging_negotiation exchanging_negotiation[]
+  security_exchanging    security_exchanging?
+}
+
+model exchanging_negotiation {
+  exchanging_identifier  BigInt
+  negotiation_identifier BigInt
+  negotiation            negotiation @relation(fields: [negotiation_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkc4fac4274cae81b")
+  exchanging             exchanging  @relation(fields: [exchanging_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkc4fac428f2a9d3b")
+
+  @@unique([exchanging_identifier, negotiation_identifier], map: "exchanging_negotiation_exchanging_identifier_key")
+}
+
+model fiduciary {
+  identifier            BigInt          @id
+  thirdparty_identifier BigInt          @unique
+  thirdparty            thirdparty      @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f29d4c340e")
+  fiduciaryduty         fiduciaryduty[]
+}
+
+model fiduciaryduty {
+  identifier              BigInt                   @id
+  registry                DateTime                 @db.Date
+  observation             String?                  @db.VarChar(1024)
+  fiduciary_identifier    BigInt
+  fiduciary               fiduciary                @relation(fields: [fiduciary_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkf4f82c0418e0361e")
+  structure_fiduciaryduty structure_fiduciaryduty?
+}
+
+model fixedassetvalue {
+  identifier            BigInt                 @id
+  date                  DateTime               @db.Date
+  value                 Float
+  asset_fixedassetvalue asset_fixedassetvalue?
+}
+
+model fixedratesecurityrange {
+  identifier                       BigInt                            @id
+  date                             DateTime                          @db.Date
+  min                              Float?
+  max                              Float?
+  structure_fixedratesecurityrange structure_fixedratesecurityrange?
+}
+
+model incomestatement {
+  identifier                          BigInt                                @id
+  incomestatement_statementmonthvalue incomestatement_statementmonthvalue[]
+  issuer                              issuer[]
+}
+
+model incomestatement_statementmonthvalue {
+  incomestatement_identifier     BigInt
+  statementmonthvalue_identifier BigInt              @unique(map: "incomestatement_statementmont_statementmonthvalue_identifie_key")
+  incomestatement                incomestatement     @relation(fields: [incomestatement_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkd7a6896737285ce4")
+  statementmonthvalue            statementmonthvalue @relation(fields: [statementmonthvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkd7a689674e7dd2c4")
+}
+
+model indexmodel {
+  identifier   BigInt         @id
+  description  String?        @db.VarChar(1024)
+  name         String         @db.VarChar(255)
+  formula      String?
+  schema       String
+  benchmark    benchmark[]
+  interestrate interestrate[]
+}
+
+model inflowvalue {
+  identifier           BigInt                @id
+  date                 DateTime              @db.Date
+  number               Float?
+  unitvalue            Float?
+  amount               Float
+  security_inflowvalue security_inflowvalue?
+}
+
+model interestrate {
+  identifier            BigInt                 @id
+  descriptor            String?
+  reference             DateTime               @db.Date
+  model_identifier      BigInt
+  indexmodel            indexmodel             @relation(fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk4816174ac484b437")
+  security_interestrate security_interestrate?
+}
+
+model investment {
+  identifier                 BigInt                      @id
+  number                     Float?
+  amount                     Float?
+  value                      Float?
+  investor_identifier        BigInt
+  investor                   investor                    @relation(fields: [investor_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fke9cc0ef31877cbf2")
+  investorprofile_investment investorprofile_investment?
+}
+
+model investmentfundrange {
+  identifier                    BigInt                         @id
+  date                          DateTime                       @db.Date
+  min                           Float?
+  max                           Float?
+  structure_investmentfundrange structure_investmentfundrange?
+}
+
+model investor {
+  identifier            BigInt       @id
+  thirdparty_identifier BigInt       @unique
+  investment            investment[]
+  thirdparty            thirdparty   @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f2294468b8")
+}
+
+model investorclass {
+  identifier      BigInt            @id
+  name            String            @db.VarChar(255)
+  description     String?           @db.VarChar(1024)
+  investorprofile investorprofile[]
+}
+
+model investorprofile {
+  identifier                 BigInt                       @id
+  number                     Int?
+  amount                     Float?
+  numbersecurities           Float?
+  iclass_identifier          BigInt
+  security_identifier        BigInt
+  investorclass              investorclass                @relation(fields: [iclass_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk1715f9d119b67093")
+  security                   security                     @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk1715f9d157b7316e")
+  investorprofile_investment investorprofile_investment[]
+}
+
+model investorprofile_investment {
+  investorprofile_identifier BigInt
+  investment_identifier      BigInt          @unique
+  investorprofile            investorprofile @relation(fields: [investorprofile_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk5656ce213e6e7a2")
+  investment                 investment      @relation(fields: [investment_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk5656ce21d4c6bf5b")
+}
+
+model issuer {
+  issuertype              String                  @db.VarChar(31)
+  identifier              BigInt                  @id
+  nickname                String                  @db.VarChar(255)
+  name                    String?                 @db.VarChar(255)
+  cnpj                    String?                 @db.VarChar(255)
+  description             String?
+  address                 String?                 @db.VarChar(2048)
+  cvmname                 String?                 @db.VarChar(255)
+  cvmregistry             DateTime?               @db.Date
+  cvmcode                 String?                 @db.VarChar(255)
+  duration                Int?
+  managed                 Boolean?
+  structured              Boolean?
+  director                String?                 @db.VarChar(255)
+  phone                   String?                 @db.VarChar(255)
+  fax                     String?                 @db.VarChar(255)
+  activity                String?                 @db.VarChar(255)
+  market                  String?                 @db.VarChar(255)
+  shareholding            String?                 @db.VarChar(255)
+  constitution_identifier BigInt?
+  setupdate               DateTime?               @db.Date
+  statement_identifier    BigInt?
+  np                      Boolean?
+  constitution            constitution?           @relation(fields: [constitution_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk831c5ed920a6fdf8")
+  incomestatement         incomestatement?        @relation(fields: [statement_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk831c5ed9c8df29bb")
+  issuer_administration   issuer_administration[]
+  issuer_audit            issuer_audit[]
+  issuer_management       issuer_management[]
+  issuer_ratingtag        issuer_ratingtag[]
+  issuer_structurer       issuer_structurer[]
+  operation               operation[]
+
+  @@index([issuertype, constitution_identifier, identifier], map: "issuer_idx_issuertype_constituti_identifier")
+  @@index([issuertype, identifier], map: "issuer_idx_issuertype_identifier")
+  @@index([issuertype, identifier], map: "issuer_idx_issuertype_identifier_1")
+}
+
+model issuer_administration {
+  issuer_identifier         BigInt
+  administration_identifier BigInt         @unique
+  issuer                    issuer         @relation(fields: [issuer_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8d0caea437a6fb44")
+  administration            administration @relation(fields: [administration_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk8d0caea45012b8fb")
+
+  @@index([issuer_identifier], map: "issuer_administrat_idx_issuer_identifier")
+}
+
+model issuer_audit {
+  issuer_identifier BigInt
+  audit_identifier  BigInt @unique
+  audit             audit  @relation(fields: [audit_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkc4ed26d5a0ee2095")
+  issuer            issuer @relation(fields: [issuer_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkc4ed26d5f0c6e738")
+}
+
+model issuer_management {
+  issuer_identifier     BigInt
+  management_identifier BigInt     @unique
+  issuer                issuer     @relation(fields: [issuer_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkc018b98937a6fb44")
+  management            management @relation(fields: [management_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkc018b989e691f95b")
+
+  @@index([issuer_identifier], map: "issuer_management_idx_issuer_identifier")
+}
+
+model issuer_ratingtag {
+  issuer_identifier    BigInt
+  ratingtag_identifier BigInt    @unique
+  ratingtag            ratingtag @relation(fields: [ratingtag_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkb2d6d2b71a7f4b5")
+  issuer               issuer    @relation(fields: [issuer_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkb2d6d2b7f0c6e738")
+}
+
+model issuer_structurer {
+  issuer_identifier     BigInt
+  structurer_identifier BigInt
+  issuer                issuer     @relation(fields: [issuer_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk366ac2a537a6fb44")
+  structurer            structurer @relation(fields: [structurer_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk366ac2a585065712")
+
+  @@unique([issuer_identifier, structurer_identifier], map: "issuer_structurer_issuer_identifier_key")
+}
+
+model issuevalue {
+  identifier          BigInt   @id
+  amount              Float
+  date                DateTime @db.Date
+  number              Float?
+  unitvalue           Float?
+  issue               Int
+  series              Int?
+  security_identifier BigInt
+  security            security @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkcc52743857b7316e")
+}
+
+model item {
+  identifier    BigInt          @id
+  name          String          @db.VarChar(255)
+  description   String?         @db.VarChar(1024)
+  itemstructure itemstructure[]
+
+  @@index([identifier], map: "item_idx_identifier")
+}
+
+model itemconstraint {
+  identifier                                                                                        BigInt                              @id
+  category_identifier                                                                               BigInt?
+  item_identifier                                                                                   BigInt
+  classificationmodel_itemconstraint                                                                classificationmodel_itemconstraint?
+  category                                                                                          category?                           @relation(fields: [category_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk558cbd709e680c8b")
+  itemstructure                                                                                     itemstructure                       @relation(fields: [item_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk558cbd70ce18b9d2")
+  itemconstraint_compatibility                                                                      itemconstraint_compatibility[]      @ignore
+  itemconstraint_required_itemconstraint_required_requireditemconstraint_identifierToitemconstraint itemconstraint_required[]           @relation("itemconstraint_required_requireditemconstraint_identifierToitemconstraint") @ignore
+  itemconstraint_required_itemconstraint_required_itemconstraint_identifierToitemconstraint         itemconstraint_required[]           @relation("itemconstraint_required_itemconstraint_identifierToitemconstraint") @ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model itemconstraint_compatibility {
+  itemconstraint_identifier  BigInt
+  itemreciprocity_identifier BigInt
+  itemconstraint             itemconstraint  @relation(fields: [itemconstraint_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fke16ad8a144ec272b")
+  itemreciprocity            itemreciprocity @relation(fields: [itemreciprocity_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fke16ad8a1c3ec3845")
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model itemconstraint_required {
+  itemconstraint_identifier                                                                BigInt
+  requireditemconstraint_identifier                                                        BigInt
+  itemconstraint_itemconstraint_required_requireditemconstraint_identifierToitemconstraint itemconstraint @relation("itemconstraint_required_requireditemconstraint_identifierToitemconstraint", fields: [requireditemconstraint_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk2a0f1dce186bfc6c")
+  itemconstraint_itemconstraint_required_itemconstraint_identifierToitemconstraint         itemconstraint @relation("itemconstraint_required_itemconstraint_identifierToitemconstraint", fields: [itemconstraint_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk2a0f1dce44ec272b")
+
+  @@ignore
+}
+
+model itemreciprocity {
+  identifier                   BigInt                         @id
+  compatible                   Boolean?
+  itemconstraint_compatibility itemconstraint_compatibility[] @ignore
+}
+
+model itemstructure {
+  identifier          BigInt           @id
+  parent_identifier   BigInt?
+  item_identifier     BigInt
+  classification      classification[]
+  itemconstraint      itemconstraint[]
+  itemstructure       itemstructure?   @relation("itemstructureToitemstructure", fields: [parent_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkc16ac78015dd97db")
+  other_itemstructure itemstructure[]  @relation("itemstructureToitemstructure")
+  item                item             @relation(fields: [item_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkc16ac7804128d6eb")
+
+  @@index([identifier], map: "itemstructure_idx_identifier")
+}
+
+model lawyer {
+  identifier            BigInt             @id
+  thirdparty_identifier BigInt             @unique
+  thirdparty            thirdparty         @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f2873f2224")
+  structure_lawyer      structure_lawyer[]
+}
+
+model liability {
+  identifier                      BigInt                            @id
+  costaccounting                  costaccounting[]
+  liability_balanceentry          liability_balanceentry[]
+  liability_currentliabilityvalue liability_currentliabilityvalue[]
+  liability_networthentry         liability_networthentry[]
+  operation                       operation[]
+  security                        security[]
+
+  @@index([identifier], map: "liability_idx_identifier")
+}
+
+model liability_balanceentry {
+  liability_identifier BigInt
+  balance_identifier   BigInt       @unique
+  liability            liability    @relation(fields: [liability_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk2db0e9281adb75c2")
+  balanceentry         balanceentry @relation(fields: [balance_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk2db0e928cef9b908")
+}
+
+model liability_currentliabilityvalue {
+  liability_identifier             BigInt
+  currentliabilityvalue_identifier BigInt                @unique(map: "liability_currentliabilityval_currentliabilityvalue_identif_key")
+  liability                        liability             @relation(fields: [liability_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkb332d44b1adb75c2")
+  currentliabilityvalue            currentliabilityvalue @relation(fields: [currentliabilityvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkb332d44b42cf9cc2")
+}
+
+model liability_networthentry {
+  liability_identifier BigInt
+  networth_identifier  BigInt        @unique
+  liability            liability     @relation(fields: [liability_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk78351def1adb75c2")
+  networthentry        networthentry @relation(fields: [networth_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk78351def1c2ef12")
+
+  @@index([liability_identifier], map: "liability_networth_idx_liability_identifier")
+}
+
+model linkedeventregistry {
+  identifier                BigInt               @id
+  text                      String?
+  classification_identifier BigInt?
+  model_identifier          BigInt?
+  classification            classification?      @relation(fields: [classification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fke2488f3e26071d4b")
+  classificationmodel       classificationmodel? @relation(fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fke2488f3e3d12557f")
+  eventregistry             eventregistry        @relation(fields: [identifier], references: [identifier], onDelete: Cascade, onUpdate: NoAction, map: "fke2488f3e78b9446f")
+}
+
+model management {
+  identifier         BigInt             @id
+  registry           DateTime           @db.Date
+  observation        String?            @db.VarChar(1024)
+  manager_identifier BigInt
+  issuer_management  issuer_management?
+  manager            manager            @relation(fields: [manager_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkb88546376c88e3e")
+
+  @@index([identifier, registry], map: "management_idx_identifier_registry")
+}
+
+model manager {
+  identifier            BigInt       @id
+  thirdparty_identifier BigInt       @unique
+  management            management[]
+  thirdparty            thirdparty   @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f29501a78d")
+
+  @@index([identifier, thirdparty_identifier], map: "manager_idx_identifier_thirdparty_iden")
+}
+
+model negotiation {
+  identifier             BigInt                   @id
+  unitvalue              Float?
+  price                  Float?
+  settlementdate         DateTime?                @db.Date
+  amount                 Float?
+  pricemark2             Float?
+  pricemark1             Float?
+  trades                 Int?
+  number                 Float?
+  registry               DateTime                 @db.Date
+  priceratio             Float?
+  settlementmode         String?                  @db.VarChar(255)
+  observation            String?                  @db.VarChar(1024)
+  pricemark3             Float?
+  time                   DateTime?                @db.Time(6)
+  exchanging_negotiation exchanging_negotiation[]
+  settlement_negotiation settlement_negotiation[]
+}
+
+model networthentry {
+  identifier              BigInt                   @id
+  date                    DateTime                 @db.Date
+  value                   Float
+  liability_networthentry liability_networthentry?
+
+  @@index([identifier, date], map: "networthentry_idx_identifier_date")
+}
+
+model networthvalue {
+  identifier BigInt   @id
+  date       DateTime @db.Date
+  number     Float?
+  unitvalue  Float?
+  amount     Float
+}
+
+model nominalinterestvalue {
+  identifier                    BigInt                         @id
+  date                          DateTime                       @db.Date
+  number                        Float?
+  unitvalue                     Float?
+  amount                        Float
+  security_nominalinterestvalue security_nominalinterestvalue?
+}
+
+model nominalprincipalvalue {
+  identifier                     BigInt                          @id
+  date                           DateTime                        @db.Date
+  number                         Float?
+  unitvalue                      Float?
+  amount                         Float
+  security_nominalprincipalvalue security_nominalprincipalvalue?
+}
+
+model nominalvalue {
+  identifier            BigInt                 @id
+  date                  DateTime               @db.Date
+  number                Float?
+  unitvalue             Float?
+  amount                Float
+  security_nominalvalue security_nominalvalue?
+}
+
+model operation {
+  identifier               BigInt                     @id
+  registry                 DateTime                   @db.Date
+  observation              String?                    @db.VarChar(1024)
+  name                     String?                    @db.VarChar(255)
+  issuer_identifier        BigInt
+  structure_identifier     BigInt
+  asset_identifier         BigInt
+  chronology_identifier    BigInt?
+  liability_identifier     BigInt
+  model_identifier         BigInt?
+  asset                    asset                      @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkda8cf54712bcc005")
+  liability                liability                  @relation(fields: [liability_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkda8cf5471adb75c2")
+  classificationmodel      classificationmodel?       @relation(fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkda8cf5473d12557f")
+  chronology               chronology?                @relation(fields: [chronology_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkda8cf547ac208ad9")
+  structure                structure                  @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkda8cf547dde4a67c")
+  issuer                   issuer                     @relation(fields: [issuer_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkda8cf547f0c6e738")
+  operation_classification operation_classification[]
+
+  @@index([identifier], map: "operation_idx_identifier")
+  @@index([issuer_identifier], map: "operation_idx_issuer_identifier")
+}
+
+model operation_classification {
+  operation_identifier      BigInt
+  classification_identifier BigInt         @unique
+  classification            classification @relation(fields: [classification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk983c61fe26071d4b")
+  operation                 operation      @relation(fields: [operation_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk983c61fe9ff69295")
+}
+
+model outflowinterestvalue {
+  identifier                    BigInt                         @id
+  date                          DateTime                       @db.Date
+  number                        Float?
+  unitvalue                     Float?
+  amount                        Float
+  security_outflowinterestvalue security_outflowinterestvalue?
+}
+
+model outflowprincipalvalue {
+  identifier                     BigInt                          @id
+  date                           DateTime                        @db.Date
+  number                         Float?
+  unitvalue                      Float?
+  amount                         Float
+  security_outflowprincipalvalue security_outflowprincipalvalue?
+}
+
+model outflowvalue {
+  identifier            BigInt                 @id
+  date                  DateTime               @db.Date
+  number                Float?
+  unitvalue             Float?
+  amount                Float
+  security_outflowvalue security_outflowvalue?
+}
+
+model payment {
+  identifier       BigInt            @id
+  descriptor       String?
+  date             DateTime          @db.Date
+  type_identifier  BigInt
+  paymenttype      paymenttype       @relation(fields: [type_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk3454c9e659aafc48")
+  security_payment security_payment?
+}
+
+model paymenttype {
+  identifier  BigInt    @id
+  name        String    @db.VarChar(255)
+  description String?   @db.VarChar(1024)
+  schema      String
+  formula     String?
+  payment     payment[]
+}
+
+model period {
+  identifier       BigInt             @id
+  name             String             @db.VarChar(255)
+  description      String?            @db.VarChar(1024)
+  periodconstraint periodconstraint[]
+  periodregistry   periodregistry[]
+}
+
+model periodconstraint {
+  identifier                                                                 BigInt           @id
+  snapshot                                                                   Boolean?
+  single                                                                     Boolean?
+  period_identifier                                                          BigInt
+  model_identifier                                                           BigInt
+  snapshotmodel_identifier                                                   BigInt?
+  chronologymodel_periodconstraint_snapshotmodel_identifierTochronologymodel chronologymodel? @relation("periodconstraint_snapshotmodel_identifierTochronologymodel", fields: [snapshotmodel_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk447d2e9ee9bcc783")
+  chronologymodel_periodconstraint_model_identifierTochronologymodel         chronologymodel  @relation("periodconstraint_model_identifierTochronologymodel", fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk447d2e9ef4fdf9bf")
+  period                                                                     period           @relation(fields: [period_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk447d2e9ef6ecbfb9")
+}
+
+model periodregistry {
+  identifier                                            BigInt    @id
+  registry                                              DateTime  @db.Date
+  observation                                           String?   @db.VarChar(1024)
+  endofperiod                                           DateTime? @db.Date
+  timeline_identifier                                   BigInt
+  snapshot_identifier                                   BigInt?
+  period_identifier                                     BigInt
+  timeline_periodregistry_snapshot_identifierTotimeline timeline? @relation("periodregistry_snapshot_identifierTotimeline", fields: [snapshot_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkdf33853eced7ee16")
+  timeline_periodregistry_timeline_identifierTotimeline timeline  @relation("periodregistry_timeline_identifierTotimeline", fields: [timeline_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkdf33853ee74cef79")
+  period                                                period    @relation(fields: [period_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkdf33853ef6ecbfb9")
+}
+
+model placement {
+  identifier                    BigInt              @id
+  type_identifier               BigInt?
+  ceilingbenchmark_identifier   BigInt?
+  pclass_identifier             BigInt?
+  securityregistry_identifier   BigInt?
+  securitywaiver_identifier     BigInt?
+  agent_identifier              BigInt
+  securityrestricted_identifier BigInt?
+  securityregistry              securityregistry?   @relation(fields: [securityregistry_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fke25032c520f1776e")
+  placementagent                placementagent      @relation(fields: [agent_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fke25032c54ed9d26d")
+  placementclass                placementclass?     @relation(fields: [pclass_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fke25032c55518ce79")
+  benchmark                     benchmark?          @relation(fields: [ceilingbenchmark_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fke25032c58841ff04")
+  securitywaiver                securitywaiver?     @relation(fields: [securitywaiver_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fke25032c5ca04c28e")
+  securityrestricted            securityrestricted? @relation(fields: [securityrestricted_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fke25032c5cc7d9f2e")
+  placementtype                 placementtype?      @relation(fields: [type_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fke25032c5dbd3f727")
+  security_placement            security_placement?
+}
+
+model placementagent {
+  identifier            BigInt      @id
+  thirdparty_identifier BigInt      @unique
+  placement             placement[]
+  thirdparty            thirdparty  @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f2b5ee1340")
+}
+
+model placementclass {
+  identifier  BigInt      @id
+  name        String      @db.VarChar(255)
+  description String?     @db.VarChar(1024)
+  placement   placement[]
+}
+
+model placementtype {
+  identifier  BigInt      @id
+  name        String      @db.VarChar(255)
+  description String?     @db.VarChar(1024)
+  placement   placement[]
+}
+
+model positionvalue {
+  identifier                  BigInt                       @id
+  date                        DateTime                     @db.Date
+  value                       Float
+  unitvalue                   Float?
+  assetsecurity_positionvalue assetsecurity_positionvalue?
+}
+
+model provisionreceivableindex {
+  identifier                         BigInt                              @id
+  date                               DateTime                            @db.Date
+  value                              Float
+  structure_provisionreceivableindex structure_provisionreceivableindex?
+}
+
+model provisionvalue {
+  identifier           BigInt                @id
+  date                 DateTime              @db.Date
+  value                Float
+  asset_provisionvalue asset_provisionvalue?
+
+  @@index([identifier, date], map: "provisionvalue_idx_identifier_date")
+}
+
+model quotacvmregistry {
+  identifier        BigInt           @id
+  protocoldate      DateTime?        @db.Date
+  distribution      String?          @db.VarChar(255)
+  type              String?          @db.VarChar(255)
+  closingdate       DateTime?        @db.Date
+  administrationfee String?          @db.VarChar(255)
+  receivable        String?          @db.VarChar(255)
+  observation       String?          @db.VarChar(255)
+  securityregistry  securityregistry @relation(fields: [identifier], references: [identifier], onDelete: Cascade, onUpdate: NoAction, map: "fkead68f3f6cf296c")
+}
+
+model rating {
+  identifier       BigInt      @id
+  name             String      @db.VarChar(255)
+  description      String?     @db.VarChar(1024)
+  modifiable       Boolean
+  scale_identifier BigInt
+  ratingscale      ratingscale @relation(fields: [scale_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk917a9dbd9f88bf")
+  ratingtag        ratingtag[]
+}
+
+model ratingaction {
+  identifier  BigInt      @id
+  name        String      @db.VarChar(255)
+  description String?     @db.VarChar(1024)
+  ratingtag   ratingtag[]
+}
+
+model ratingmodifier {
+  identifier       BigInt      @id
+  name             String      @db.VarChar(255)
+  description      String?     @db.VarChar(1024)
+  scale_identifier BigInt
+  ratingscale      ratingscale @relation(fields: [scale_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkc53df7b49f88bf")
+  ratingtag        ratingtag[]
+}
+
+model ratingscale {
+  identifier        BigInt           @id
+  name              String           @db.VarChar(255)
+  description       String?          @db.VarChar(1024)
+  prefix            String?          @db.VarChar(255)
+  suffix            String?          @db.VarChar(255)
+  agency_identifier BigInt
+  rating            rating[]
+  ratingmodifier    ratingmodifier[]
+  agencyrating      agencyrating     @relation(fields: [agency_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk7ae3898d135b36cf")
+}
+
+model ratingtag {
+  identifier          BigInt              @id
+  registry            DateTime            @db.Date
+  observation         String?             @db.VarChar(1024)
+  amount              Float
+  type_identifier     BigInt?
+  rating_identifier   BigInt
+  action_identifier   BigInt
+  modifier_identifier BigInt?
+  agency_identifier   BigInt
+  issuer_ratingtag    issuer_ratingtag?
+  agencyrating        agencyrating        @relation(fields: [agency_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8bfb749d135b36cf")
+  ratingtype          ratingtype?         @relation(fields: [type_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8bfb749d575f4e71")
+  rating              rating              @relation(fields: [rating_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8bfb749d83976954")
+  ratingaction        ratingaction        @relation(fields: [action_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8bfb749da1c1e2b1")
+  ratingmodifier      ratingmodifier?     @relation(fields: [modifier_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8bfb749db9897dd1")
+  security_ratingtag  security_ratingtag?
+}
+
+model ratingtype {
+  identifier  BigInt      @id
+  name        String      @db.VarChar(255)
+  description String?     @db.VarChar(1024)
+  ratingtag   ratingtag[]
+}
+
+model realestate {
+  identifier                BigInt                   @id(map: "realstate_pkey")
+  asset_identifier          BigInt
+  classification_identifier BigInt
+  asset                     asset                    @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk4211ed7312bcc005")
+  realestateclassification  realestateclassification @relation(fields: [classification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk4211ed73d921f178")
+}
+
+model realestateclassification {
+  identifier                              BigInt                                    @id(map: "realstateclassification_pkey")
+  model_identifier                        BigInt?
+  realestate                              realestate[]
+  classificationmodel                     classificationmodel?                      @relation(fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk2a50e8393d12557f")
+  realestateclassification_classification realestateclassification_classification[]
+}
+
+model realestateclassification_classification {
+  realestateclassification_identifier BigInt
+  classification_identifier           BigInt                   @unique(map: "realstateclassification_classific_classification_identifier_key")
+  realestateclassification            realestateclassification @relation(fields: [realestateclassification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk89b9eccc1c52f325")
+  classification                      classification           @relation(fields: [classification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk89b9eccc26071d4b")
+}
+
+model receivable {
+  identifier                   BigInt                         @id
+  initialbalance               Float?
+  numbercontracts              Int?
+  fiduciarytitle               String?                        @db.VarChar(255)
+  rdg                          Float?
+  rpr                          Float?
+  classification_identifier    BigInt
+  asset_identifier             BigInt
+  asset                        asset                          @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk8349063c12bcc005")
+  receivableclassification     receivableclassification       @relation(fields: [classification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8349063cd6773ce7")
+  receivable_receivablecustody receivable_receivablecustody[]
+  receivable_servicing         receivable_servicing[]
+  receivable_settlement        receivable_settlement[]
+
+  @@index([asset_identifier], map: "receivable_idx_asset_identifier")
+}
+
+model receivable_receivablecustody {
+  receivable_identifier BigInt
+  custody_identifier    BigInt            @unique
+  receivable            receivable        @relation(fields: [receivable_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkf64390f23299b32b")
+  receivablecustody     receivablecustody @relation(fields: [custody_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkf64390f2a46fd99")
+}
+
+model receivable_servicing {
+  receivable_identifier BigInt
+  servicing_identifier  BigInt     @unique
+  servicing             servicing  @relation(fields: [servicing_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk10f38fcf282c35b5")
+  receivable            receivable @relation(fields: [receivable_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk10f38fcf3299b32b")
+}
+
+model receivable_settlement {
+  receivable_identifier BigInt
+  settlement_identifier BigInt     @unique
+  receivable            receivable @relation(fields: [receivable_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk78b0b72c3299b32b")
+  settlement            settlement @relation(fields: [settlement_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk78b0b72c3c828d9b")
+}
+
+model receivableclassification {
+  identifier                              BigInt                                    @id
+  model_identifier                        BigInt?
+  receivable                              receivable[]
+  classificationmodel                     classificationmodel?                      @relation(fields: [model_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9e846d423d12557f")
+  receivableclassification_classification receivableclassification_classification[]
+
+  @@index([identifier], map: "receivableclassifi_idx_identifier")
+}
+
+model receivableclassification_classification {
+  receivableclassification_identifier BigInt
+  classification_identifier           BigInt                   @unique(map: "receivableclassification_classifi_classification_identifier_key")
+  classification                      classification           @relation(fields: [classification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk7f8c94a326071d4b")
+  receivableclassification            receivableclassification @relation(fields: [receivableclassification_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk7f8c94a3c9486a4b")
+
+  @@index([receivableclassification_identifier], map: "receivableclassifi_idx_receivableclassification_ident")
+}
+
+model receivablecustodian {
+  identifier            BigInt              @id
+  thirdparty_identifier BigInt              @unique
+  thirdparty            thirdparty          @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f2f030cf12")
+  receivablecustody     receivablecustody[]
+
+  @@index([identifier, thirdparty_identifier], map: "receivablecustodia_idx_identifier_thirdparty_iden")
+}
+
+model receivablecustody {
+  identifier                   BigInt                        @id
+  registry                     DateTime                      @db.Date
+  observation                  String?                       @db.VarChar(1024)
+  custodian_identifier         BigInt
+  asset_receivablecustody      asset_receivablecustody?
+  receivable_receivablecustody receivable_receivablecustody?
+  receivablecustodian          receivablecustodian           @relation(fields: [custodian_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk2ede3835a7586fe2")
+
+  @@index([identifier], map: "receivablecustody_idx_identifier")
+  @@index([registry], map: "receivablecustody_idx_registry")
+}
+
+model receivablerange {
+  identifier                BigInt                     @id
+  date                      DateTime                   @db.Date
+  min                       Float?
+  max                       Float?
+  structure_receivablerange structure_receivablerange?
+}
+
+model receivablevalue {
+  identifier            BigInt                 @id
+  date                  DateTime               @db.Date
+  value                 Float
+  asset_receivablevalue asset_receivablevalue?
+
+  @@index([identifier, date], map: "receivablevalue_idx_identifier_date")
+}
+
+model reporange {
+  identifier          BigInt               @id
+  date                DateTime             @db.Date
+  min                 Float?
+  max                 Float?
+  structure_reporange structure_reporange?
+}
+
+model saletradeoffervalue {
+  identifier                     BigInt                          @id
+  amount                         Float
+  date                           DateTime                        @db.Date
+  number                         Float?
+  unitvalue                      Float?
+  time                           DateTime?                       @db.Time(6)
+  offertime                      DateTime?                       @db.Time(6)
+  settlement_saletradeoffervalue settlement_saletradeoffervalue?
+}
+
+model security {
+  securitytype                   String                           @db.Char(1)
+  identifier                     BigInt                           @id
+  series                         Int?
+  anbidcode                      Int?
+  duration                       Int?
+  issueregistered                Boolean?
+  issuewaived                    Boolean?
+  totalinvestors                 Int?
+  liability_identifier           BigInt
+  sclass_identifier              BigInt
+  chronology_identifier          BigInt?
+  rated                          Boolean?
+  issuerestricted                Boolean?
+  issue                          Int?
+  offertype                      String?                          @db.VarChar(255)
+  issueprivate                   Boolean?
+  assetsecurity                  assetsecurity[]
+  investorprofile                investorprofile[]
+  issuevalue                     issuevalue[]
+  liability                      liability                        @relation(fields: [liability_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk3c6cdb601adb75c2")
+  securityclass                  securityclass                    @relation(fields: [sclass_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk3c6cdb608d5612f5")
+  chronology                     chronology?                      @relation(fields: [chronology_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk3c6cdb60ac208ad9")
+  security_balancevalue          security_balancevalue[]
+  security_benchmark             security_benchmark[]
+  security_exchanging            security_exchanging[]
+  security_inflowvalue           security_inflowvalue[]
+  security_interestrate          security_interestrate[]
+  security_nominalinterestvalue  security_nominalinterestvalue[]
+  security_nominalprincipalvalue security_nominalprincipalvalue[]
+  security_nominalvalue          security_nominalvalue[]
+  security_outflowinterestvalue  security_outflowinterestvalue[]
+  security_outflowprincipalvalue security_outflowprincipalvalue[]
+  security_outflowvalue          security_outflowvalue[]
+  security_payment               security_payment[]
+  security_placement             security_placement[]
+  security_ratingtag             security_ratingtag[]
+  security_settlement            security_settlement[]
+  securityprivate                securityprivate[]
+  securityregistry               securityregistry[]
+  securityrestricted             securityrestricted[]
+  securitywaiver                 securitywaiver[]
+}
+
+model security_balancevalue {
+  security_identifier     BigInt
+  balancevalue_identifier BigInt       @unique
+  security                security     @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkb0c57a9457b7316e")
+  balancevalue            balancevalue @relation(fields: [balancevalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkb0c57a947c02572e")
+}
+
+model security_benchmark {
+  security_identifier  BigInt
+  benchmark_identifier BigInt    @unique
+  benchmark            benchmark @relation(fields: [benchmark_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk66a03ebe9c1a530e")
+  security             security  @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk66a03ebecdc74c1a")
+}
+
+model security_exchanging {
+  security_identifier   BigInt
+  exchanging_identifier BigInt     @unique
+  security              security   @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkd149287f57b7316e")
+  exchanging            exchanging @relation(fields: [exchanging_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkd149287f8f2a9d3b")
+}
+
+model security_inflowvalue {
+  security_identifier    BigInt
+  inflowvalue_identifier BigInt      @unique
+  inflowvalue            inflowvalue @relation(fields: [inflowvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk6fe1eadf424e8682")
+  security               security    @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk6fe1eadf57b7316e")
+}
+
+model security_interestrate {
+  security_identifier     BigInt
+  interestrate_identifier BigInt       @unique
+  interestrate            interestrate @relation(fields: [interestrate_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8c7021c93656ce2a")
+  security                security     @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8c7021c941cf6dfc")
+}
+
+model security_networthvalue {
+  security_identifier      BigInt
+  networthvalue_identifier BigInt @unique
+}
+
+model security_nominalinterestvalue {
+  security_identifier             BigInt
+  nominalinterestvalue_identifier BigInt               @unique
+  security                        security             @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9e2e08a57b7316e")
+  nominalinterestvalue            nominalinterestvalue @relation(fields: [nominalinterestvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9e2e08ac14d174e")
+}
+
+model security_nominalprincipalvalue {
+  security_identifier              BigInt
+  nominalprincipalvalue_identifier BigInt                @unique(map: "security_nominalprincipalvalu_nominalprincipalvalue_identif_key")
+  security                         security              @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk1f2a62057b7316e")
+  nominalprincipalvalue            nominalprincipalvalue @relation(fields: [nominalprincipalvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk1f2a62063c6e382")
+}
+
+model security_nominalvalue {
+  security_identifier     BigInt
+  nominalvalue_identifier BigInt       @unique
+  nominalvalue            nominalvalue @relation(fields: [nominalvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk6a2d609436972e")
+  security                security     @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk6a2d609457b7316e")
+}
+
+model security_outflowinterestvalue {
+  security_identifier             BigInt
+  outflowinterestvalue_identifier BigInt               @unique
+  security                        security             @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkce653ea57b7316e")
+  outflowinterestvalue            outflowinterestvalue @relation(fields: [outflowinterestvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkce653ea81553b4e")
+}
+
+model security_outflowprincipalvalue {
+  security_identifier              BigInt
+  outflowprincipalvalue_identifier BigInt                @unique(map: "security_outflowprincipalvalu_outflowprincipalvalue_identif_key")
+  security                         security              @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk5f5d9ec057b7316e")
+  outflowprincipalvalue            outflowprincipalvalue @relation(fields: [outflowprincipalvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk5f5d9ec0a4c33f82")
+}
+
+model security_outflowvalue {
+  security_identifier     BigInt
+  outflowvalue_identifier BigInt       @unique
+  outflowvalue            outflowvalue @relation(fields: [outflowvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk80a33f44ca2bb2e")
+  security                security     @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk80a33f457b7316e")
+}
+
+model security_payment {
+  security_identifier BigInt
+  payment_identifier  BigInt   @unique
+  security            security @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkf5efec0757b7316e")
+  payment             payment  @relation(fields: [payment_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkf5efec07d15feea2")
+}
+
+model security_placement {
+  security_identifier  BigInt
+  placement_identifier BigInt    @unique
+  placement            placement @relation(fields: [placement_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fka9ab50a655edd7d5")
+  security             security  @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fka9ab50a657b7316e")
+}
+
+model security_ratingtag {
+  security_identifier  BigInt
+  ratingtag_identifier BigInt    @unique
+  ratingtag            ratingtag @relation(fields: [ratingtag_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk5356927e1a7f4b5")
+  security             security  @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk5356927e57b7316e")
+}
+
+model security_securityadjustment {
+  security_identifier           BigInt
+  securityadjustment_identifier BigInt @unique
+}
+
+model security_securityhistoricvalue {
+  security_identifier              BigInt
+  securityhistoricvalue_identifier BigInt @unique(map: "security_securityhistoricvalue_securityhistoricvalue_identifier")
+}
+
+model security_settlement {
+  security_identifier   BigInt
+  settlement_identifier BigInt     @unique
+  settlement            settlement @relation(fields: [settlement_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9f4103883c828d9b")
+  security              security   @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9f41038857b7316e")
+}
+
+model securityadjustment {
+  identifier BigInt   @id
+  date       DateTime @db.Date
+  factor     Float
+}
+
+model securityclass {
+  identifier         BigInt               @id
+  name               String               @db.VarChar(255)
+  description        String?              @db.VarChar(1024)
+  security           security[]
+  subordinationindex subordinationindex[]
+}
+
+model securityhistoricvalue {
+  identifier                BigInt    @id
+  date                      DateTime  @db.Date
+  nwnumber                  Float?
+  nwunitvalue               Float?
+  nwamount                  Float?
+  inflownumber              Float?
+  inflowunitvalue           Float?
+  inflowamount              Float?
+  outflowinterestnumber     Float?
+  outflowinterestunitvalue  Float?
+  outflowinterestamount     Float?
+  outflowprincipalnumber    Float?
+  outflowprincipalunitvalue Float?
+  outflowprincipalamount    Float?
+  outflownumber             Float?
+  outflowunitvalue          Float?
+  outflowamount             Float?
+  systemcnpj                String?   @db.VarChar(255)
+  systemsecuritycode        String?   @db.VarChar(255)
+  numbertrades              Int?
+  numbertraded              Float?
+  price                     Float?
+  amounttraded              Float?
+  pricemark1                Float?
+  pricemark2                Float?
+  pricemark3                Float?
+  unitvalue                 Float?
+  priceratio                Float?
+  settlementdate            DateTime? @db.Date
+  settlementmode            String?   @db.VarChar(255)
+  time                      DateTime? @db.Time(6)
+  observation               String?   @db.VarChar(1024)
+}
+
+model securityprivate {
+  identifier          BigInt   @id
+  amount              Float
+  date                DateTime @db.Date
+  number              Float?
+  unitvalue           Float?
+  security_identifier BigInt
+  security            security @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk499901db57b4316e")
+}
+
+model securityregistry {
+  identifier          BigInt            @id
+  date                DateTime          @db.Date
+  number              Float?
+  unitvalue           Float?
+  amount              Float
+  registrynumber      String?           @db.VarChar(255)
+  processnumber       String?           @db.VarChar(255)
+  issue               Int?
+  security_identifier BigInt
+  series              Int?
+  cracvmregistry      cracvmregistry?
+  cricvmregistry      cricvmregistry?
+  placement           placement[]
+  quotacvmregistry    quotacvmregistry?
+  security            security          @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkfc20fbd57b7316e")
+}
+
+model securityrestricted {
+  identifier          BigInt      @id
+  amount              Float
+  date                DateTime    @db.Date
+  number              Float?
+  unitvalue           Float?
+  processnumber       String?     @db.VarChar(255)
+  security_identifier BigInt
+  placement           placement[]
+  security            security    @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk499907db57b7316e")
+}
+
+model securitywaiver {
+  identifier          BigInt      @id
+  date                DateTime    @db.Date
+  number              Float?
+  unitvalue           Float?
+  amount              Float
+  processnumber       String?     @db.VarChar(255)
+  automatic           Boolean?
+  security_identifier BigInt
+  placement           placement[]
+  security            security    @relation(fields: [security_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fka070dbe457b7316e")
+}
+
+model servicer {
+  identifier            BigInt      @id
+  thirdparty_identifier BigInt      @unique
+  thirdparty            thirdparty  @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f2560f747d")
+  servicing             servicing[]
+}
+
+model servicing {
+  identifier           BigInt                @id
+  registry             DateTime              @db.Date
+  observation          String?               @db.VarChar(1024)
+  servicer_identifier  BigInt
+  asset_servicing      asset_servicing?
+  receivable_servicing receivable_servicing?
+  servicer             servicer              @relation(fields: [servicer_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk6bdf2a1249672ed2")
+}
+
+model settlement {
+  identifier                     BigInt                           @id
+  registry                       DateTime                         @db.Date
+  observation                    String?                          @db.VarChar(1024)
+  system_identifier              BigInt
+  systemcode                     String?                          @db.VarChar(255)
+  receivable_settlement          receivable_settlement?
+  security_settlement            security_settlement?
+  settlementsystem               settlementsystem                 @relation(fields: [system_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk7b3865494924201b")
+  settlement_buytradeoffervalue  settlement_buytradeoffervalue[]
+  settlement_depositvalue        settlement_depositvalue[]
+  settlement_negotiation         settlement_negotiation[]
+  settlement_saletradeoffervalue settlement_saletradeoffervalue[]
+}
+
+model settlement_buytradeoffervalue {
+  settlement_identifier         BigInt
+  buytradeoffervalue_identifier BigInt             @unique
+  settlement                    settlement         @relation(fields: [settlement_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9be13c693c828d9b")
+  buytradeoffervalue            buytradeoffervalue @relation(fields: [buytradeoffervalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9be13c69bec2e475")
+}
+
+model settlement_depositvalue {
+  settlement_identifier   BigInt
+  depositvalue_identifier BigInt       @unique
+  settlement              settlement   @relation(fields: [settlement_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk5daf4c93c828d9b")
+  depositvalue            depositvalue @relation(fields: [depositvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk5daf4c970c10a35")
+}
+
+model settlement_negotiation {
+  settlement_identifier  BigInt
+  negotiation_identifier BigInt
+  settlement             settlement  @relation(fields: [settlement_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk18f241cb3c828d9b")
+  negotiation            negotiation @relation(fields: [negotiation_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk18f241cb74cae81b")
+
+  @@unique([settlement_identifier, negotiation_identifier], map: "settlement_negotiation_settlement_identifier_key")
+}
+
+model settlement_saletradeoffervalue {
+  settlement_identifier          BigInt
+  saletradeoffervalue_identifier BigInt              @unique(map: "settlement_saletradeoffervalu_saletradeoffervalue_identifie_key")
+  settlement                     settlement          @relation(fields: [settlement_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk746fbd9c3c828d9b")
+  saletradeoffervalue            saletradeoffervalue @relation(fields: [saletradeoffervalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk746fbd9c8e04785b")
+}
+
+model settlementsystem {
+  identifier                   BigInt                         @id
+  thirdparty_identifier        BigInt                         @unique
+  settlement                   settlement[]
+  thirdparty                   thirdparty                     @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f2b0c0e8d8")
+  settlementsystem_volumevalue settlementsystem_volumevalue[]
+}
+
+model settlementsystem_volumevalue {
+  settlementsystem_identifier BigInt
+  volumevalue_identifier      BigInt           @unique
+  settlementsystem            settlementsystem @relation(fields: [settlementsystem_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk96dd85706addee12")
+  volumevalue                 volumevalue      @relation(fields: [volumevalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk96dd8570b66eca3b")
+}
+
+model statementmonthvalue {
+  identifier                          BigInt                               @id
+  month                               Int
+  value                               Float
+  year                                Int
+  incomestatement_statementmonthvalue incomestatement_statementmonthvalue?
+}
+
+model structure {
+  identifier                           BigInt                                 @id
+  multiseries                          Boolean?
+  fiduciaryregimen                     Boolean?
+  fiduciarydefined                     Boolean?
+  advocated                            Boolean?
+  eventliquidation_identifier          BigInt?
+  eventevaluation_identifier           BigInt?
+  analystdefined                       Boolean?
+  operation                            operation[]
+  eventevaluationclassification        eventevaluationclassification?         @relation(fields: [eventevaluation_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk800f4d53299ae42")
+  eventliquidationclassification       eventliquidationclassification?        @relation(fields: [eventliquidation_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk800f4d53fa3388fa")
+  structure_consulting                 structure_consulting[]
+  structure_currentaccountrange        structure_currentaccountrange[]
+  structure_delinquencyreceivableindex structure_delinquencyreceivableindex[]
+  structure_derivativerange            structure_derivativerange[]
+  structure_fiduciaryduty              structure_fiduciaryduty[]
+  structure_fixedratesecurityrange     structure_fixedratesecurityrange[]
+  structure_investmentfundrange        structure_investmentfundrange[]
+  structure_lawyer                     structure_lawyer[]
+  structure_provisionreceivableindex   structure_provisionreceivableindex[]
+  structure_receivablerange            structure_receivablerange[]
+  structure_reporange                  structure_reporange[]
+  structure_treasurybcrange            structure_treasurybcrange[]
+  structure_treasuryrange              structure_treasuryrange[]
+  structure_treasurysecurityrange      structure_treasurysecurityrange[]
+  subordinationindex                   subordinationindex[]
+
+  @@index([identifier], map: "structure_idx_identifier")
+}
+
+model structure_consulting {
+  structure_identifier  BigInt
+  consulting_identifier BigInt     @unique
+  consulting            consulting @relation(fields: [consulting_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkcba7670273c66b7b")
+  structure             structure  @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkcba76702dde4a67c")
+
+  @@index([structure_identifier], map: "structure_consulti_idx_structure_identifier")
+}
+
+model structure_currentaccountrange {
+  structure_identifier           BigInt
+  currentaccountrange_identifier BigInt              @unique
+  currentaccountrange            currentaccountrange @relation(fields: [currentaccountrange_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkd640721dc86cf3bc")
+  structure                      structure           @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkd640721ddde4a67c")
+}
+
+model structure_delinquencyreceivableindex {
+  structure_identifier                  BigInt
+  delinquencyreceivableindex_identifier BigInt                     @unique(map: "structure_delinquencyreceivab_delinquencyreceivableindex_id_key")
+  structure                             structure                  @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkf8ed78afdde4a67c")
+  delinquencyreceivableindex            delinquencyreceivableindex @relation(fields: [delinquencyreceivableindex_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkf8ed78affb286e94")
+}
+
+model structure_derivativerange {
+  structure_identifier       BigInt
+  derivativerange_identifier BigInt          @unique
+  derivativerange            derivativerange @relation(fields: [derivativerange_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkddce20ea5352637c")
+  structure                  structure       @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkddce20eadde4a67c")
+}
+
+model structure_fiduciaryduty {
+  structure_identifier     BigInt
+  fiduciaryduty_identifier BigInt        @unique
+  fiduciaryduty            fiduciaryduty @relation(fields: [fiduciaryduty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fka12dfe182fda1415")
+  structure                structure     @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fka12dfe18dde4a67c")
+}
+
+model structure_fixedratesecurityrange {
+  structure_identifier              BigInt
+  fixedratesecurityrange_identifier BigInt                 @unique(map: "structure_fixedratesecurityra_fixedratesecurityrange_identi_key")
+  fixedratesecurityrange            fixedratesecurityrange @relation(fields: [fixedratesecurityrange_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk2fd3c8554e5f84b4")
+  structure                         structure              @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk2fd3c855dde4a67c")
+}
+
+model structure_investmentfundrange {
+  structure_identifier           BigInt
+  investmentfundrange_identifier BigInt              @unique
+  investmentfundrange            investmentfundrange @relation(fields: [investmentfundrange_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9f8a3ed9351289fc")
+  structure                      structure           @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk9f8a3ed9dde4a67c")
+}
+
+model structure_lawyer {
+  structure_identifier BigInt
+  lawyer_identifier    BigInt
+  lawyer               lawyer    @relation(fields: [lawyer_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkb240be90adf312f2")
+  structure            structure @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkb240be90dde4a67c")
+
+  @@unique([structure_identifier, lawyer_identifier], map: "structure_lawyer_structure_identifier_key")
+}
+
+model structure_provisionreceivableindex {
+  structure_identifier                BigInt
+  provisionreceivableindex_identifier BigInt                   @unique(map: "structure_provisionreceivable_provisionreceivableindex_iden_key")
+  provisionreceivableindex            provisionreceivableindex @relation(fields: [provisionreceivableindex_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk65eb80d1b9cd2d4")
+  structure                           structure                @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk65eb80ddde4a67c")
+}
+
+model structure_receivablerange {
+  structure_identifier       BigInt
+  receivablerange_identifier BigInt          @unique
+  receivablerange            receivablerange @relation(fields: [receivablerange_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk408865759874ae9c")
+  structure                  structure       @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk40886575dde4a67c")
+}
+
+model structure_reporange {
+  structure_identifier BigInt
+  reporange_identifier BigInt    @unique
+  reporange            reporange @relation(fields: [reporange_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk111160df7c41875c")
+  structure            structure @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk111160dfdde4a67c")
+}
+
+model structure_treasurybcrange {
+  structure_identifier       BigInt
+  treasurybcrange_identifier BigInt          @unique
+  structure                  structure       @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk4d63624ddde4a67c")
+  treasurybcrange            treasurybcrange @relation(fields: [treasurybcrange_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk4d63624df05abb9c")
+}
+
+model structure_treasuryrange {
+  structure_identifier     BigInt
+  treasuryrange_identifier BigInt        @unique
+  treasuryrange            treasuryrange @relation(fields: [treasuryrange_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk20b76a2e86dc85fc")
+  structure                structure     @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk20b76a2edde4a67c")
+}
+
+model structure_treasurysecurityrange {
+  structure_identifier             BigInt
+  treasurysecurityrange_identifier BigInt                @unique(map: "structure_treasurysecurityran_treasurysecurityrange_identif_key")
+  treasurysecurityrange            treasurysecurityrange @relation(fields: [treasurysecurityrange_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk65c709ce62ac89dc")
+  structure                        structure             @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk65c709cedde4a67c")
+}
+
+model structurer {
+  identifier            BigInt              @id
+  thirdparty_identifier BigInt              @unique
+  issuer_structurer     issuer_structurer[]
+  thirdparty            thirdparty          @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f281da5d7f")
+}
+
+model subordinationindex {
+  identifier                            BigInt                                  @id
+  sclass_identifier                     BigInt
+  structure_identifier                  BigInt
+  securityclass                         securityclass                           @relation(fields: [sclass_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkd4ef4d038d5612f5")
+  structure                             structure                               @relation(fields: [structure_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkd4ef4d03dde4a67c")
+  subordinationindex_subordinationvalue subordinationindex_subordinationvalue[]
+}
+
+model subordinationindex_subordinationvalue {
+  subordinationindex_identifier BigInt
+  subordinationvalue_identifier BigInt             @unique(map: "subordinationindex_subordinat_subordinationvalue_identifier_key")
+  subordinationindex            subordinationindex @relation(fields: [subordinationindex_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk5aec125ea1f5feb4")
+  subordinationvalue            subordinationvalue @relation(fields: [subordinationvalue_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk5aec125eebdab554")
+}
+
+model subordinationvalue {
+  identifier                            BigInt                                 @id
+  date                                  DateTime                               @db.Date
+  value                                 Float
+  subordinationindex_subordinationvalue subordinationindex_subordinationvalue?
+}
+
+model thirdparty {
+  identifier          BigInt               @id
+  nickname            String               @db.VarChar(255)
+  cnpj                String?              @db.VarChar(255)
+  name                String?              @db.VarChar(255)
+  cvmname             String?              @db.VarChar(255)
+  address             String?              @db.VarChar(255)
+  city                String?              @db.VarChar(255)
+  state               String?              @db.VarChar(255)
+  country             String?              @db.VarChar(255)
+  zipcode             String?              @db.VarChar(255)
+  phone               String?              @db.VarChar(255)
+  fax                 String?              @db.VarChar(255)
+  email               String?              @db.VarChar(255)
+  website             String?              @db.VarChar(255)
+  observation         String?              @db.VarChar(4096)
+  activity_identifier BigInt?
+  administrator       administrator?
+  agencyrating        agencyrating?
+  assignor            assignor?
+  auditor             auditor?
+  contact             contact[]
+  creditanalyst       creditanalyst?
+  exchange            exchange?
+  fiduciary           fiduciary?
+  investor            investor?
+  lawyer              lawyer?
+  manager             manager?
+  placementagent      placementagent?
+  receivablecustodian receivablecustodian?
+  servicer            servicer?
+  settlementsystem    settlementsystem?
+  structurer          structurer?
+  economicactivity    economicactivity?    @relation(fields: [activity_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk3d01c9df4dba00a7")
+
+  @@index([identifier, activity_identifier], map: "thirdparty_idx_identifier_activity_identi")
+}
+
+model timeline {
+  identifier                                                  BigInt           @id
+  name                                                        String           @db.VarChar(255)
+  description                                                 String?          @db.VarChar(1024)
+  chronology                                                  chronology[]
+  eventregistry_eventregistry_snapshot_identifierTotimeline   eventregistry[]  @relation("eventregistry_snapshot_identifierTotimeline")
+  eventregistry_eventregistry_timeline_identifierTotimeline   eventregistry[]  @relation("eventregistry_timeline_identifierTotimeline")
+  periodregistry_periodregistry_snapshot_identifierTotimeline periodregistry[] @relation("periodregistry_snapshot_identifierTotimeline")
+  periodregistry_periodregistry_timeline_identifierTotimeline periodregistry[] @relation("periodregistry_timeline_identifierTotimeline")
+}
+
+model treasurybcrange {
+  identifier                BigInt                     @id
+  date                      DateTime                   @db.Date
+  min                       Float?
+  max                       Float?
+  structure_treasurybcrange structure_treasurybcrange?
+}
+
+model treasuryrange {
+  identifier              BigInt                   @id
+  date                    DateTime                 @db.Date
+  min                     Float?
+  max                     Float?
+  structure_treasuryrange structure_treasuryrange?
+}
+
+model treasurysecurityrange {
+  identifier                      BigInt                           @id
+  date                            DateTime                         @db.Date
+  min                             Float?
+  max                             Float?
+  structure_treasurysecurityrange structure_treasurysecurityrange?
+}
+
+model treasuryvalue {
+  identifier          BigInt               @id
+  date                DateTime             @db.Date
+  value               Float
+  asset_treasuryvalue asset_treasuryvalue?
+
+  @@index([identifier, date], map: "treasuryvalue_idx_identifier_date")
+}
+
+model volumevalue {
+  identifier                   BigInt                        @id
+  amount                       Float
+  date                         DateTime                      @db.Date
+  number                       Float?
+  unitvalue                    Float?
+  type                         String?                       @db.VarChar(255)
+  settlementsystem_volumevalue settlementsystem_volumevalue?
+}
