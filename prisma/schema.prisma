@@ -8,23 +8,23 @@ datasource db {
 }
 
 model administration {
-  id               BigInt                 @id @map("identifier")
+  identifier               BigInt                 @id
   registry                 DateTime               @db.Date
   observation              String?                @db.VarChar(1024)
   administrator_identifier BigInt
-  administrator            administrator          @relation(fields: [administrator_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkf1f4c7e6060f1be")
+  administrator            administrator          @relation(fields: [administrator_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fkf1f4c7e6060f1be")
   issuer_administration    issuer_administration?
 
-  @@index([id, registry], map: "administration_idx_identifier_registry")
+  @@index([identifier, registry], map: "administration_idx_identifier_registry")
 }
 
 model administrator {
-  id            BigInt           @id @map("identifier")
+  identifier            BigInt           @id
   thirdparty_identifier BigInt           @unique
   administration        administration[]
   thirdparty            thirdparty       @relation(fields: [thirdparty_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk481c0138dd4496f28bef2ad")
 
-  @@index([id], map: "administrator_idx_identifier")
+  @@index([identifier], map: "administrator_idx_identifier")
 }
 
 model agencyrating {
@@ -67,7 +67,7 @@ model asset_assignment {
   asset_identifier      BigInt
   assignment_identifier BigInt     @unique
   asset                 asset      @relation(fields: [asset_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fka547dbbc12bcc005")
-  assignment            assignment @relation(fields: [assignment_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fka547dbbc58405f1b")
+  assignment            assignment @relation(fields: [assignment_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fka547dbbc58405f1b")
 }
 
 model asset_classification {
@@ -161,7 +161,7 @@ model assetsecurity_positionvalue {
 }
 
 model assignment {
-  identifier          BigInt            @id
+  id          BigInt            @id @map("identifier")
   assignor_identifier BigInt?
   sector_identifier   BigInt?
   asset_assignment    asset_assignment?
@@ -827,7 +827,7 @@ model issuer_administration {
   issuer_identifier         BigInt
   administration_identifier BigInt         @unique
   issuer                    issuer         @relation(fields: [issuer_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8d0caea437a6fb44")
-  administration            administration @relation(fields: [administration_identifier], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk8d0caea45012b8fb")
+  administration            administration @relation(fields: [administration_identifier], references: [identifier], onDelete: NoAction, onUpdate: NoAction, map: "fk8d0caea45012b8fb")
 
   @@index([issuer_identifier], map: "issuer_administrat_idx_issuer_identifier")
 }
